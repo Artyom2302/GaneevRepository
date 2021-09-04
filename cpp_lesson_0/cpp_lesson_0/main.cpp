@@ -34,7 +34,7 @@ int main()
 {
 	
 	//LearnTypes();
-	//hello
+	//hello()
 	int mass[5]= {1 , 2 ,3};//cтатический массив определенного размера
 	vector <int> v;
 	vector <Student> group ;
