@@ -1,10 +1,9 @@
 #include <iostream>//in out поток
 #include <vector>//работа с динамическими массивами
-#include <sstream>// для работы со строками
+#include <sstream>// для работы со строками getline()
 #include <clocale>// для русского языка
-#include  <conio.h>// Для ввода с клавиатуры
-#include <cstring>
-#include <string>
+#include  <conio.h>// Для ввода с клавиатуры _getch()
+#include <cstring> //
 using namespace std;
 
 //Cоздание структуры Труба
@@ -44,6 +43,34 @@ bool checkint(string s) {
 		return false;
 	}
 }
+bool checkfloat(string s) {
+	if ((s.size() != 0) && (s[0] != '0')) {
+		int tochka = 0;
+		for (size_t i = 0; i < s.size(); i++)
+		{
+			if (s[i] == '.') {//проверка на точки
+				tochka += 1;
+			}
+			if (tochka > 1) {// возврат если точек больше одной
+				return false;
+			}
+			if (isdigit(s[i])||(s[i]=='.'))
+			{
+				continue;
+			}
+			else {
+				return false;
+			}
+
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 //Создание объекта типа данных труба
 void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 {
@@ -52,9 +79,8 @@ void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 	//cоздаем переменные типа string для считывания с консоли 
 	string value1;
 	
-	
+	cout << "Введите ID: ";
 	while (true){
-		cout << "Введите ID: ";
 		getline(cin, value1);
 		if (checkint(value1) ){
 			pipesf[pipesf.size() - 1].id = stoi(value1);
@@ -62,17 +88,61 @@ void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 		}
 		else
 		{
-			cout << "Введите значение верно !!! \n";
+			cout << "Введите значение верно !!! ID:  ";
 		}
 	}
 	
 	cout << endl << "Введите длину: " ;
-	cin >> pipesf[pipesf.size()-1].length;
+	while (true) {
+		getline(cin, value1);
+		if (checkfloat(value1)) {
+			pipesf[pipesf.size() - 1].length = stoi(value1);
+			break;
+		}
+		else
+		{
+			cout << "Введите значение верно !!! Длина:  ";
+		}
+	}
+	
 	cout << endl << "Введите диаметр: ";
-	cin >> pipesf[pipesf.size()-1].diameter;
-	cout << endl << "Введите 1,если труба в ремонте или " ;
-	cout << "введите 0,если труба в пригодном для экплуатации: " ;
-	cin >> pipesf[pipesf.size()-1].repair;
+	while (true) {
+		getline(cin, value1);
+		if (checkfloat(value1)) {
+			pipesf[pipesf.size() - 1].diameter = stoi(value1);
+			break;
+		}
+		else
+		{
+			cout << "Введите значение верно !!! Диаметр:  ";
+		}
+	}
+	cout << endl << "Введите 1,если труба в ремонте или "  
+		<< "введите 0,если труба в пригодном для экплуатации: " ;
+	while (true)
+	{
+		getline(cin, value1);
+		if (value1 != "1" && value1 != "0")
+		{
+			cout << "Введите либо 0(Если труба в пригодном для экплуатации состоянии), либо 1(Если труба в ремонте) ";
+		}
+		else {
+			if (value1=="1")
+			{
+				pipesf[pipesf.size() - 1].repair = true;
+				
+			}
+			else {
+				pipesf[pipesf.size() - 1].repair = false;
+			
+			}
+			break;
+		
+		}
+		
+	}
+
+	
 }
 void mainmenu()
 	{
@@ -121,10 +191,12 @@ int main() {
 			case 56:
 				break;
 			default:
-				cout << "Нажмите одну из перечисленных выше кнопок!!!";
+				join = true;
 				break;
 			}
-			
+			if (join) {
+				break;
+			}
 			
 		}
 
