@@ -70,7 +70,10 @@ bool checkfloat(string s) {
 		return false;
 	}
 }
-
+//bool checkid ( ){
+//
+//
+//}
 //Создание объекта типа данных труба
 void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 {
