@@ -1,9 +1,10 @@
-﻿
-
-#include <iostream>
-
+﻿#include <iostream>
+using namespace std;
 int main()
 {
-    std::cout << "Hello World!\n";
+	int x;
+	cin >> x;
+	if (x == 0) {
+		cout << "Hello World!\n";
+	}
 }
-
