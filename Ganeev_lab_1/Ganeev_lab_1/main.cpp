@@ -4,6 +4,7 @@
 #include <clocale>// для русского языка
 #include  <conio.h>// Для ввода с клавиатуры _getch()
 #include <cstring> //
+#include <iomanip>//форматированный вывод
 using namespace std;
 
 //Cоздание структуры Труба
@@ -24,56 +25,34 @@ struct compressor {
 };
 //Функция проверки
 bool checkint(string s) {
-	if ((s.size() != 0) && (s[0] != '0')) {
-		for (size_t i = 0; i < s.size(); i++)
-		{
-			if (isdigit(s[i]))
-			{
-				continue;
-			}
-			else {
-				return false;
-			}
-
-		}
-		return true;
-	}
-	else
-	{
+	if (!((s.size() != 0) && (s[0] != '0')))
 		return false;
-	}
+	
+	for (size_t i = 0; i < s.size(); i++)
+		if (!isdigit(s[i]))
+			return false;
+
+	return true;
 }
 bool checkfloat(string s) {
-	if ((s.size() != 0) && (s[0] != '0')) {
-		int tochka = 0;
-		for (size_t i = 0; i < s.size(); i++)
-		{
-			if (s[i] == '.') {//проверка на точки
-				tochka += 1;
-			}
-			if (tochka > 1) {// возврат если точек больше одной
-				return false;
-			}
-			if (isdigit(s[i])||(s[i]=='.'))
-			{
-				continue;
-			}
-			else {
-				return false;
-			}
-
-		}
-		return true;
-	}
-	else
-	{
+	if ((s.size() == 0) || (s[0] == '0')) {
 		return false;
 	}
+	int tochka = 0;
+	for (size_t i = 0; i < s.size(); i++)
+	{
+		if (s[i] == '.') {//проверка на точки
+			tochka += 1;
+		}
+		if (tochka > 1) {// возврат если точек больше одной
+			return false;
+		}
+		if (!(isdigit(s[i]) || (s[i] == '.')))
+			return false;
+	}
+	return true;
 }
-//bool checkid ( ){
-//
-//
-//}
+
 //Создание объекта типа данных труба
 void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 {
@@ -99,7 +78,7 @@ void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 	while (true) {
 		getline(cin, value1);
 		if (checkfloat(value1)) {
-			pipesf[pipesf.size() - 1].length = stoi(value1);
+			pipesf[pipesf.size() - 1].length = stod(value1);
 			break;
 		}
 		else
@@ -112,7 +91,7 @@ void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 	while (true) {
 		getline(cin, value1);
 		if (checkfloat(value1)) {
-			pipesf[pipesf.size() - 1].diameter = stoi(value1);
+			pipesf[pipesf.size() - 1].diameter = stod(value1);
 			break;
 		}
 		else
@@ -132,12 +111,10 @@ void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 		else {
 			if (value1=="1")
 			{
-				pipesf[pipesf.size() - 1].repair = true;
-				
+				pipesf[pipesf.size() - 1].repair = true;	
 			}
 			else {
 				pipesf[pipesf.size() - 1].repair = false;
-			
 			}
 			break;
 		
@@ -158,6 +135,20 @@ void mainmenu()
 		"7. Загрузить" << endl <<
 		"0. Выход" << endl;
 	}
+void outinfo(/*vector <pipe>& pipes , vector <compressor>& compressor*/) {
+	system("cls");
+	cout.width(100);
+	cout << "Общая информация\n";
+	cout.width(100);
+	cout << "Трубы\n";
+	cout.width(20);
+	cout<<setw(10) <<"Id " << setw(15) <<"Длина" << setw(15) << "Диаметр"<< setw(30) <<"Состояние(В ремонте или нет)";
+	/*for (size_t i = 0; i < pipes.size(); i++)
+	{
+		cout.width(10);
+		cout <<"";
+	}*/
+}
 
 int main() {
 	setlocale(LC_CTYPE, "rus");//установка русского языка 
@@ -166,32 +157,39 @@ int main() {
 	bool join,quit;
 	vector <pipe> pipes ;
 	pipes.resize(0);
+
+	join = false;
+	quit = false;
 	while (true)
 	{
 		system("cls");
 		mainmenu();
 		menustatus = _getch();
-		while (true)
+		while (true) //mainmenu
 		{
 			switch (menustatus)
-			{
-			case 49:
+			{//submenus
+			case '1':
 				addpipe(pipes);
 				join = true;
 				break;
-			case 50:
+			case '2':
+				outinfo();
+				join = true;
 				break;
-			case 51:
+			case '3':
 				break;
-			case 52:
+			case '4':
 				break;
-			case 53:
+			case '5':
 				break;
-			case 54:
+			case '6':
 				break;
-			case 55:
+			case '7':
 				break;
-			case 56:
+			case '0':
+				join = true;
+				quit = true;
 				break;
 			default:
 				join = true;
@@ -200,14 +198,17 @@ int main() {
 			if (join) {
 				break;
 			}
+			if (quit ) {
+				break;
+			}
 			
 		}
 
 		
-	
+	    
+
+
 	}
-	
-	
 	_getch();
 	return 0;
 	
