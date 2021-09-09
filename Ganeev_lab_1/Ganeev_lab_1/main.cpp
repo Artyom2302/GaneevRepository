@@ -18,11 +18,10 @@ struct pipe {
 struct compressor {
 	unsigned int id;
 	string name;
-	unsigned int workshops;
-	unsigned int workshopsinwork;
-	double performance;
-	
-};
+	unsigned int workshops;//цехи
+	unsigned int workshopsinwork;//цехи в работе
+	double performance;//эффективность
+	};
 //Функция проверки
 bool checkint(string s) {
 	if (!((s.size() != 0) && (s[0] != '0')))
@@ -60,18 +59,38 @@ void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 	pipesf.resize(pipesf.size()+1);
 	//cоздаем переменные типа string для считывания с консоли 
 	string value1;
-	
+	int key;
 	cout << "Введите ID: ";
 	while (true){
 		getline(cin, value1);
-		if (checkint(value1) ){
-			pipesf[pipesf.size() - 1].id = stoi(value1);
-			break;
+		for (size_t i = 0; i <pipesf.size(); i++){
+			if ((value1)==to_string(pipesf[i].id))
+			{
+				key = 1;
+				break;
+			}
+			else { key = 0; }
+			}
+			if (key == 1) {
+				cout << "Введено уже существующее значение\nCписок использованный id:";
+				for (size_t i = 0; i < pipesf.size() - 1; i++)
+				{
+					cout << pipesf[i].id << endl;
+				}
+			}
+			
+			else{
+				if (checkint(value1)) {
+				pipesf[pipesf.size() - 1].id = stoi(value1); 
+				break;
+				}
+				
+			else
+			{
+				cout << "Введите значение корректно!!!";
+			}
 		}
-		else
-		{
-			cout << "Введите значение верно !!! ID:  ";
-		}
+		
 	}
 	
 	cout << endl << "Введите длину: " ;
@@ -100,16 +119,18 @@ void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 		}
 	}
 	cout << endl << "Введите 1,если труба в ремонте или "  
-		<< "введите 0,если труба в пригодном для экплуатации: " ;
+		<< "введите 0,если труба в пригодном для экплуатации: \n" ;
+	char value2;
 	while (true)
 	{
-		getline(cin, value1);
-		if (value1 != "1" && value1 != "0")
+		
+		value2 = _getch();
+		if (value2 != '1' && value2 != '0')
 		{
-			cout << "Введите либо 0(Если труба в пригодном для экплуатации состоянии), либо 1(Если труба в ремонте) ";
+			cout << "Введите либо 0(Если труба в пригодном для экплуатации состоянии), либо 1(Если труба в ремонте) \n";
 		}
 		else {
-			if (value1=="1")
+			if (value2=='1')
 			{
 				pipesf[pipesf.size() - 1].repair = true;	
 			}
@@ -124,6 +145,53 @@ void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 
 	
 }
+void addpipe(vector <compressor>& compressorf) //compressorf-вектор труб для функции
+{
+	system("cls");
+	compressorf.resize(compressorf.size() + 1);
+	string value1;
+
+	cout << "Введите ID: ";
+	while (true) {
+		getline(cin, value1);
+		for (size_t i = 0; i < compressorf.size(); i++)
+		{
+			if ((value1) == to_string(compressorf[i].id))
+			{
+				value1 = 1.1;
+				break;
+			}
+		}
+		if (checkint(value1)) {
+			compressorf[compressorf.size() - 1].id = stoi(value1);
+			break;
+		}
+		else
+		{
+			cout << "Введите значение корректно(ID может быть занят,для просмотра этого нужно просмотреть все компрессорные станции) !!! ID:  ";
+		}
+	}
+
+	cout << endl << "Введите имя: ";
+	getline(cin, compressorf[compressorf.size() - 1].name);
+	cout << "";
+	while (true) {
+		getline(cin, value1);
+		if (checkint(value1)) {
+			compressorf[compressorf.size() - 1].id = stoi(value1);
+			break;
+		}
+		else
+		{
+			cout << "Введите значение корректно(ID может быть занят,для просмотра этого нужно просмотреть все компрессорные станции) !!! ID:  ";
+		}
+	}
+
+	
+	
+
+
+}
 void mainmenu()
 	{
 	cout << "1. Добавить трубу" << endl <<
@@ -135,19 +203,38 @@ void mainmenu()
 		"7. Загрузить" << endl <<
 		"0. Выход" << endl;
 	}
-void outinfo(/*vector <pipe>& pipes , vector <compressor>& compressor*/) {
+void outinfo(vector <pipe>& pipes /*, vector <compressor>& compressor*/) {
+	char menuexit;
+do
+{
 	system("cls");
-	cout.width(100);
+	cout.width(50);
 	cout << "Общая информация\n";
-	cout.width(100);
+	cout.width(45);
 	cout << "Трубы\n";
 	cout.width(20);
-	cout<<setw(10) <<"Id " << setw(15) <<"Длина" << setw(15) << "Диаметр"<< setw(30) <<"Состояние(В ремонте или нет)";
-	/*for (size_t i = 0; i < pipes.size(); i++)
+	cout << setw(10) << "Id " << setw(20) << "Длина" << setw(20) << "Диаметр" << setw(40) << "Состояние(В ремонте или нет)\n";
+	for (size_t i = 0; i < pipes.size(); i++)
 	{
-		cout.width(10);
-		cout <<"";
-	}*/
+		cout << setw(10) << pipes[i].id << setw(20) << pipes[i].length << setw(20) << pipes[i].diameter;
+		if (pipes[i].repair) {
+			cout << setw(40) << "В ремонте\n";
+		}
+		else
+		{
+			cout << setw(40) << "В эксплуатации\n";
+		}
+	}
+	cout << "\n\nДля возращения в меню нажмите 0";
+	
+	menuexit = _getch();
+
+} 
+while (menuexit!='0');
+	
+	
+	
+
 }
 
 int main() {
@@ -174,11 +261,15 @@ int main() {
 				join = true;
 				break;
 			case '2':
-				outinfo();
-				join = true;
+				
 				break;
 			case '3':
+				outinfo(pipes);
+				join = true;
 				break;
+				
+				
+				
 			case '4':
 				break;
 			case '5':
@@ -196,18 +287,14 @@ int main() {
 				break;
 			}
 			if (join) {
-				break;
+				if (quit) {
+
+					exit(0);
+				}
+			break;
 			}
-			if (quit ) {
-				break;
-			}
-			
+				
 		}
-
-		
-	    
-
-
 	}
 	_getch();
 	return 0;
