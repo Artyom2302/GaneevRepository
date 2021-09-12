@@ -23,7 +23,7 @@ struct compressor {
 	double performance;//эффективность
 	};
 //Функция проверки
-bool checkint(string s) {
+bool CheckInt(string s) {
 	if (!((s.size() != 0) && (s[0] != '0')))
 		return false;
 	
@@ -33,7 +33,9 @@ bool checkint(string s) {
 
 	return true;
 }
-bool checkfloat(string s) {
+
+
+bool CheckFloat(string s) {
 	if ((s.size() == 0) || (s[0] == '0')) {
 		return false;
 	}
@@ -52,51 +54,81 @@ bool checkfloat(string s) {
 	return true;
 }
 
-//Создание объекта типа данных труба
+
+bool CheckPipeId(string value, vector <pipe>& pipesf) {
+	
+	for (size_t i = 0; i < pipesf.size(); i++) {
+		if ((value) == to_string(pipesf[i].id))
+		{
+			return  true;
+			break;
+		}
+	}
+	return false;
+}
+
+bool CheckCompressorId(string value, vector <compressor>& compressorf) {
+	for (size_t i = 0; i < compressorf.size(); i++) {
+		if ((value) == to_string(compressorf[i].id))
+		{
+			return  true;
+			break;
+		}
+	}
+	return false;
+
+}
+
+void mainmenu()
+	{
+	cout << "1. Добавить трубу" << endl <<
+		"2. Добавить КС" << endl <<
+		"3. Просмотр всех объектов" << endl <<
+		"4. Редактировать трубу" << endl <<
+		"5. Редактировать КС" << endl <<
+		"6. Сохранить" << endl <<
+		"7. Загрузить" << endl <<
+		"8. меню 8" << endl <<
+		"0. Выход" << endl;
+	}
+
 void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
-{
-	system("cls");
-	pipesf.resize(pipesf.size()+1);
-	//cоздаем переменные типа string для считывания с консоли 
+{ 
 	string value1;
 	int key;
+	char value2;
+
+	system("cls");
+	pipesf.resize(pipesf.size() + 1);
+	
+	
 	cout << "Введите ID: ";
-	while (true){
-		getline(cin, value1);
-		for (size_t i = 0; i <pipesf.size(); i++){
-			if ((value1)==to_string(pipesf[i].id))
+	while (true) {
+		getline(cin, value1);	
+		if (CheckPipeId(value1,pipesf))
+		{
+			cout << "Такой ID уже существуют\nСписок существующих ID: ";
+			for (size_t i = 0; i < pipesf.size()-1; i++)
 			{
-				key = 1;
-				break;
-			}
-			else { key = 0; }
-			}
-			if (key == 1) {
-				cout << "Введено уже существующее значение\nCписок использованный id:";
-				for (size_t i = 0; i < pipesf.size() - 1; i++)
-				{
-					cout << pipesf[i].id << endl;
-				}
-			}
-			
-			else{
-				if (checkint(value1)) {
-				pipesf[pipesf.size() - 1].id = stoi(value1); 
-				break;
-				}
-				
-			else
-			{
-				cout << "Введите значение корректно!!!";
+				cout << pipesf[i].id<< " ";
 			}
 		}
-		
+		else {
+			if (CheckInt(value1)) {
+				pipesf[pipesf.size() - 1].id = stoi(value1);
+				break;
+			}
+			else {
+				cout << "\nВведите целочисленное число: ";
+			}
+		}
+
 	}
-	
+
 	cout << endl << "Введите длину: " ;
 	while (true) {
 		getline(cin, value1);
-		if (checkfloat(value1)) {
+		if (CheckFloat(value1)) {
 			pipesf[pipesf.size() - 1].length = stod(value1);
 			break;
 		}
@@ -109,7 +141,7 @@ void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 	cout << endl << "Введите диаметр: ";
 	while (true) {
 		getline(cin, value1);
-		if (checkfloat(value1)) {
+		if (CheckFloat(value1)) {
 			pipesf[pipesf.size() - 1].diameter = stod(value1);
 			break;
 		}
@@ -120,7 +152,7 @@ void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 	}
 	cout << endl << "Введите 1,если труба в ремонте или "  
 		<< "введите 0,если труба в пригодном для экплуатации: \n" ;
-	char value2;
+	
 	while (true)
 	{
 		
@@ -145,7 +177,7 @@ void addpipe(vector <pipe>& pipesf) //pipesf -вектор труб для функции
 
 	
 }
-void addpipe(vector <compressor>& compressorf) //compressorf-вектор труб для функции
+void addcompressor(vector <compressor>& compressorf) //compressorf-вектор труб для функции
 {
 	system("cls");
 	compressorf.resize(compressorf.size() + 1);
@@ -154,69 +186,86 @@ void addpipe(vector <compressor>& compressorf) //compressorf-вектор труб для фун
 	cout << "Введите ID: ";
 	while (true) {
 		getline(cin, value1);
-		for (size_t i = 0; i < compressorf.size(); i++)
+		if (CheckCompressorId(value1, compressorf))
 		{
-			if ((value1) == to_string(compressorf[i].id))
+			cout << "Такой ID уже существуют\nСписок существующих ID: ";
+			for (size_t i = 0; i < compressorf.size() - 1; i++)
 			{
-				value1 = 1.1;
-				break;
+				cout << compressorf[i].id << " ";
 			}
 		}
-		if (checkint(value1)) {
-			compressorf[compressorf.size() - 1].id = stoi(value1);
-			break;
+		else {
+			if (CheckInt(value1)) {
+				compressorf[compressorf.size() - 1].id = stoi(value1);
+				break;
+			}
+			else {
+				cout << "\nВведите целочисленное число: ";
+			}
 		}
-		else
-		{
-			cout << "Введите значение корректно(ID может быть занят,для просмотра этого нужно просмотреть все компрессорные станции) !!! ID:  ";
-		}
+
 	}
 
 	cout << endl << "Введите имя: ";
 	getline(cin, compressorf[compressorf.size() - 1].name);
-	cout << "";
+
+	cout << "Введите общее количество цехов: ";
 	while (true) {
 		getline(cin, value1);
-		if (checkint(value1)) {
-			compressorf[compressorf.size() - 1].id = stoi(value1);
+		if (CheckInt(value1)) {
+			compressorf[compressorf.size() - 1].workshops = stoi(value1);
 			break;
 		}
 		else
 		{
-			cout << "Введите значение корректно(ID может быть занят,для просмотра этого нужно просмотреть все компрессорные станции) !!! ID:  ";
+			cout << "Введите целочисленное число: ";
 		}
 	}
-
 	
-	
-
-
-}
-void mainmenu()
-	{
-	cout << "1. Добавить трубу" << endl <<
-		"2. Добавить КС" << endl <<
-		"3. Просмотр всех объектов" << endl <<
-		"4. Редактировать трубу" << endl <<
-		"5. Редактировать КС" << endl <<
-		"6. Сохранить" << endl <<
-		"7. Загрузить" << endl <<
-		"0. Выход" << endl;
+	cout << "Введите  количество цехов в работе: ";
+	while (true) {
+		getline(cin, value1);
+		if (CheckInt(value1) && (stoi(value1) <= compressorf[compressorf.size() - 1].workshops)) {
+			compressorf[compressorf.size() - 1].workshopsinwork = stoi(value1);
+			break;
+		}
+		else
+		{
+			cout << "Введите целочисленное число,не превышающее количества рабочих цехов: ";
+		}
 	}
-void outinfo(vector <pipe>& pipes /*, vector <compressor>& compressor*/) {
+	
+	
+	cout << endl << "Введите эффективность: ";
+	while (true) {
+		getline(cin, value1);
+		if (CheckFloat(value1)) {
+			compressorf[compressorf.size() - 1].performance = stod(value1);
+			break;
+		}
+		else
+		{
+			cout << "Введите значение верно !!! Эффективность:  ";
+		}
+	}
+}
+void outinfo(vector <pipe>& pipes , vector <compressor>& compressor) {
 	char menuexit;
 do
 {
 	system("cls");
+
 	cout.width(50);
 	cout << "Общая информация\n";
-	cout.width(45);
+
 	cout << "Трубы\n";
-	cout.width(20);
 	cout << setw(10) << "Id " << setw(20) << "Длина" << setw(20) << "Диаметр" << setw(40) << "Состояние(В ремонте или нет)\n";
+
+
 	for (size_t i = 0; i < pipes.size(); i++)
 	{
 		cout << setw(10) << pipes[i].id << setw(20) << pipes[i].length << setw(20) << pipes[i].diameter;
+
 		if (pipes[i].repair) {
 			cout << setw(40) << "В ремонте\n";
 		}
@@ -224,6 +273,25 @@ do
 		{
 			cout << setw(40) << "В эксплуатации\n";
 		}
+
+	}
+
+
+	for (size_t i = 0; i < 100; i++)
+	{
+		cout << "-";
+	}
+	cout << "\nКомпрессорные станции\n";
+
+	cout << setw(10) << "Id " << setw(20) << "Название" << setw(30) << "Общее количество цехов"
+		<< setw(30) << "Количество цехов в работе" << setw(20) << "Эффективность" <<  endl;
+
+
+	for (size_t i = 0; i < compressor.size(); i++)
+	{
+		cout << setw(10) << compressor[i].id << setw(20) << compressor[i].name << setw(30) << compressor[i].workshops<<setw(30)
+			<< compressor[i].workshopsinwork << setw(20)<<compressor[i].performance<<endl;
+		
 	}
 	cout << "\n\nДля возращения в меню нажмите 0";
 	
@@ -231,19 +299,22 @@ do
 
 } 
 while (menuexit!='0');
-	
-	
-	
-
 }
+
+
 
 int main() {
 	setlocale(LC_CTYPE, "rus");//установка русского языка 
 	//cоздание меню link="http://www.c-cpp.ru/content/getch-getche"
+	
+
 	int menustatus;
 	bool join,quit;
 	vector <pipe> pipes ;
 	pipes.resize(0);
+	vector <compressor> compressor;
+	compressor.resize(0);
+	
 
 	join = false;
 	quit = false;
@@ -260,24 +331,31 @@ int main() {
 				addpipe(pipes);
 				join = true;
 				break;
+
 			case '2':
-				
-				break;
-			case '3':
-				outinfo(pipes);
+				addcompressor(compressor);
 				join = true;
 				break;
-				
-				
-				
+
+			case '3':
+				outinfo(pipes, compressor);
+				join = true;
+				break;
 			case '4':
 				break;
+
 			case '5':
 				break;
+
 			case '6':
 				break;
+
 			case '7':
 				break;
+
+			case '8':
+				break;
+
 			case '0':
 				join = true;
 				quit = true;
