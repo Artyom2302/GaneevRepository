@@ -211,7 +211,16 @@ compressor AddCompressor( const vector <compressor>	&compressors)
 	cout << "Компрессорная станция\nID №" << comp.id
 	 << endl << "Введите имя: ";
 
-	getline(cin, comp.name);
+	do
+	{
+		getline(cin, comp.name);
+		if (comp.name=="")
+		{
+			cout << "Введите не пустое поле\n";
+		}
+
+	} while (comp.name=="");
+	
 
 	cout << "Введите общее количество цехов: ";
 	/*while (true) {
@@ -418,11 +427,11 @@ void EditCompressor( compressor &comp) {
 	comp.workshopsinwork = stoi(value);
 }
 
-void Saveinfo(const vector <pipe>  &pipes,const vector <compressor> &compressors) {
-	ofstream fout;
+void SaveInfo(const vector <pipe>  &pipes,const vector <compressor> &compressors) {
+	ofstream fout,fbuff;
 	fout.open("data.txt",'w');
+	fbuff.open("buff.txt", 'w');
 	fout << "Общая информация\n";
-
 	fout << "Трубы\n";
 	fout << setw(10) << "Id " << setw(20) << "Длина" << setw(20) << "Диаметр" << setw(40) << "Состояние(В ремонте или нет)\n";
 
@@ -430,7 +439,7 @@ void Saveinfo(const vector <pipe>  &pipes,const vector <compressor> &compressors
 	for (size_t i = 0; i < pipes.size(); i++)
 	{
 		fout << setw(10) << pipes[i].id << setw(20) << pipes[i].length << setw(20) << pipes[i].diameter;
-
+		fbuff <<"Труба\n"<< pipes[i].id << endl << pipes[i].length << endl << pipes[i].diameter << endl << pipes[i].repair << endl;
 		if (pipes[i].repair) {
 			fout << setw(40) << "В ремонте\n";
 		}
@@ -447,7 +456,6 @@ void Saveinfo(const vector <pipe>  &pipes,const vector <compressor> &compressors
 		fout << "-";
 	}
 	fout << "\nКомпрессорные станции\n";
-
 	fout << setw(10) << "Id " << setw(20) << "Название" << setw(30) << "Общее количество цехов"
 		<< setw(30) << "Количество цехов в работе" << setw(20) << "Эффективность" << endl;
 
@@ -456,11 +464,53 @@ void Saveinfo(const vector <pipe>  &pipes,const vector <compressor> &compressors
 	{
 		fout << setw(10) << compressors[i].id << setw(20) << compressors[i].name << setw(30) << compressors[i].workshops << setw(30)
 			<< compressors[i].workshopsinwork << setw(20) << compressors[i].performance << endl;
+		fbuff <<"КС\n" << compressors[i].id << endl << compressors[i].name << endl << compressors[i].workshops << endl
+			<< compressors[i].workshopsinwork << endl << compressors[i].performance << endl;
 
 	}
 	fout.close();
+	fbuff.close();
 }
+void LoadInfo(vector <pipe>& pipes, vector <compressor>& compressors) {
+	string str;
+	ifstream in("buff.txt");
+	pipe pipebuff ;
+	compressor compressorbuff;
+	do
+	{
+		getline(in, str);
+		if (str == "Труба") {
+			getline(in, str);
+			pipebuff.id = stoi(str) ;
+			
+			getline(in, str);
+			pipebuff.length = stof(str);
+			
+			getline(in, str);
+			pipebuff.diameter = stoi(str);
+			
+			getline(in, str);
+			pipebuff.repair = stoi(str);
+			pipes.push_back(pipebuff);
+		}
+		if (str == "КС") {
+			getline(in, str);
+			compressorbuff.id= stoi(str);
+			getline(in, str);
+			compressorbuff.name = str;
+			getline(in, str);
+			compressorbuff.workshops= stoi(str);
+			getline(in, str);
+			compressorbuff.workshopsinwork = stoi(str);
+			getline(in, str);
+			compressorbuff.performance = stod(str);
+			compressors.push_back(compressorbuff);
 
+		}
+	} while (str!="");
+
+	in.close();
+}
 
 int main() {
 	setlocale(LC_CTYPE, "rus");//установка русского языка 
@@ -470,8 +520,10 @@ int main() {
 	string value;
 	pipes.resize(0);
 	vector <compressor> compressors;
+
 	compressors.resize(0);
 	int pipeindex=0,pipeid,compressorindex=0,compressorid;
+
 	while (true)
 	{
 		
@@ -537,12 +589,13 @@ int main() {
 				break;
 
 			case '6':
-
-				Saveinfo(pipes, compressors);
+				SaveInfo(pipes, compressors);
 				join = true;
 				break;
 
 			case '7':
+				LoadInfo(pipes, compressors);
+				join = true;
 				break;
 
 			case '8':
