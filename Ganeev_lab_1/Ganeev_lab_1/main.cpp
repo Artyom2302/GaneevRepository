@@ -23,7 +23,7 @@ struct compressor {
 	unsigned int id;
 	string name;
 	unsigned int workshops;//цехи
-	unsigned int workshopsinwork;//цехи в работе
+	unsigned int workshopsinwork=0;//цехи в работе
 	double performance;//эффективность
 	 };
 //Функция проверки
@@ -37,7 +37,7 @@ bool CheckInt(string s) {
 
 	return true;
 }
-
+int EnterUInt();
 int RandomId() {
 	return rand();
 }
@@ -199,7 +199,7 @@ pipe AddPipe(const vector <pipe>& pipes) //переделать
 	
 }
 
-compressor AddCompressor( const vector <compressor>	&compressors)
+compressor AddCompressor( const vector <compressor>	&compressors)//передать id
 {
 	compressor comp ;
 	string value;
@@ -208,16 +208,17 @@ compressor AddCompressor( const vector <compressor>	&compressors)
 	{
 		comp.id = rand();
 	} while ((CheckCompressorId(comp.id, compressors)));
+
 	cout << "Компрессорная станция\nID №" << comp.id
 	 << endl << "Введите имя: ";
 
 	do
 	{
 		getline(cin, comp.name);
-		if (comp.name=="")
-		{
-			cout << "Введите не пустое поле\n";
-		}
+		//if (comp.name=="")
+		//{
+		//	cout << "Введите не пустое поле\n";
+		//}
 
 	} while (comp.name=="");
 	
@@ -235,7 +236,7 @@ compressor AddCompressor( const vector <compressor>	&compressors)
 		}
 	}*/
 
-	do
+	/*do
 	{
 		getline(cin, value);
 		if (!(CheckInt(value)))
@@ -243,8 +244,8 @@ compressor AddCompressor( const vector <compressor>	&compressors)
 			cout << "Введите целочисленное число!!!\n ";
 		}
 
-	} while (!(CheckInt(value)));
-	comp.workshops = stoi(value);
+	} while (!(CheckInt(value)));*/
+	comp.workshops = EnterUInt();
 	
 	
 	cout << "Введите  количество цехов в работе: ";
@@ -293,69 +294,64 @@ compressor AddCompressor( const vector <compressor>	&compressors)
 			cout << "Введите значение верно !!! Эффективность:  ";
 		}
 
-	} while (!(CheckDouble(value) && stod(value) < 100 && stod(value) > 10));
+	} while (!(CheckDouble(value) && stod(value) <= 100 && stod(value) >= 0));
 	comp.performance = stod(value);
 	return comp;
 }
 
-void OutInfo(vector <pipe>& pipes , vector <compressor>& compressors) {
+void OutInfo(vector <pipe>& pipes, vector <compressor>& compressors)//переделать 
+{
 	char menuexit;
 
-do
-{
-
-	cout.width(50);
-	cout << "Общая информация\n";
-
-	cout << "Трубы\n";
-	cout << setw(10) << "Id " << setw(20) << "Длина" << setw(20) << "Диаметр" << setw(40) << "Состояние(В ремонте или нет)\n";
-
-
-	for (size_t i = 0; i < pipes.size(); i++)
+	do
 	{
-		cout << setw(10) << pipes[i].id << setw(20) << pipes[i].length << setw(20) << pipes[i].diameter;
 
-		if (pipes[i].repair) {
-			cout << setw(40) << "В ремонте\n";
-		}
-		else
+		cout.width(50);
+		cout << "Общая информация\n";
+
+		cout << "Трубы\n";
+		cout << setw(10) << "Id " << setw(20) << "Длина" << setw(20) << "Диаметр" << setw(40) << "Состояние(В ремонте или нет)\n";
+
+
+		for (size_t i = 0; i < pipes.size(); i++)
 		{
-			cout << setw(40) << "В эксплуатации\n";
+			cout << setw(10) << pipes[i].id << setw(20) << pipes[i].length << setw(20) << pipes[i].diameter;
+
+			cout << setw(40) << pipes[i].repair? "В ремонте\n":"В эксплуатации\n";
+
 		}
 
+
+		for (size_t i = 0; i < 100; i++)
+		{
+			cout << "-";
+		}
+		cout << "\nКомпрессорные станции\n";
+
+		cout << setw(10) << "Id " << setw(20) << "Название" << setw(30) << "Общее количество цехов"
+			<< setw(30) << "Количество цехов в работе" << setw(20) << "Эффективность" << endl;
+
+
+		for (size_t i = 0; i < compressors.size(); i++)
+		{
+			cout << setw(10) << compressors[i].id << setw(20) << compressors[i].name << setw(30) << compressors[i].workshops << setw(30)
+				<< compressors[i].workshopsinwork << setw(20) << compressors[i].performance << endl;
+
+		}
+
+		cout << "\n\nДля возращения в меню нажмите 0";
+
+		menuexit = _getch();
+
 	}
 
-
-	for (size_t i = 0; i < 100; i++)
-	{
-		cout << "-";
-	}
-	cout << "\nКомпрессорные станции\n";
-
-	cout << setw(10) << "Id " << setw(20) << "Название" << setw(30) << "Общее количество цехов"
-		<< setw(30) << "Количество цехов в работе" << setw(20) << "Эффективность" <<  endl;
-
-
-	for (size_t i = 0; i < compressors.size(); i++)
-	{
-		cout << setw(10) << compressors[i].id << setw(20) << compressors[i].name << setw(30) << compressors[i].workshops<<setw(30)
-			<< compressors[i].workshopsinwork << setw(20)<<compressors[i].performance<<endl;
-		
-	}
-	
-	cout << "\n\nДля возращения в меню нажмите 0";
-	
-	menuexit = _getch();
-
-} 
-
-while (menuexit!='0');
+	while (menuexit != '0');
 }
 
-int SearchPipeIdIndex(int index,const vector <pipe> &pipes) {
+int SearchPipeIdIndex(int id,const vector <pipe> &pipes) {
 	for (size_t i = 0; i < pipes.size(); i++)
 	{
-		if (index == pipes[i].id) {
+		if (id == pipes[i].id) {
 			return i;
 		}
 		
@@ -363,20 +359,20 @@ int SearchPipeIdIndex(int index,const vector <pipe> &pipes) {
 	return -1;
 }
 
-int SearchCompressorIdIndex( int value,const vector <compressor>& compressors) {
+int SearchCompressorIdIndex( int id,const vector <compressor>& compressors) {
 	for (size_t i = 0; i < compressors.size(); i++)
 	{
-		if (compressors[i].id == value)
+		if (compressors[i].id == id)
 		{
 			return i;
 		}
 	}
-	return 0;
+	return -1;
 }
 
-int EnterId() {
+int EnterUInt() {
 	string value;
-	cout << "Введите cуществующий id: ";
+	//cout << "Введите cуществующий id: ";
 	do
 	{
 		getline(cin, value);
@@ -389,13 +385,15 @@ int EnterId() {
 }
 
 void EditPipe(pipe &p) {
-	
+	//p.repair = !p.repair;
+
+
 	char char2boolvalue;
 	if (p.repair)
 	{
 		do
 		{
-			cout << "Труба сейчас находится в ремонте для изменения её состояния нажмите 0";
+			cout << "Труба сейчас находится в ремонте, для изменения её состояния нажмите 0";
 			char2boolvalue = _getch();
 		} while (char2boolvalue != '0');
 		p.repair = false;
@@ -404,7 +402,7 @@ void EditPipe(pipe &p) {
 	{
 		do
 		{
-			cout << "Труба сейчас находится в экспуатации для изменения её состояния нажмите 1";
+			cout << "Труба сейчас находится в экспуатации, для изменения её состояния нажмите 1";
 			char2boolvalue = _getch();
 		} while (char2boolvalue != '1');
 		p.repair = true;
@@ -514,112 +512,85 @@ void LoadInfo(vector <pipe>& pipes, vector <compressor>& compressors) {
 
 int main() {
 	setlocale(LC_CTYPE, "rus");//установка русского языка 
-	int menustatus;
-	bool join=false,quit=false;
-	vector <pipe> pipes ;
-	string value;
-	pipes.resize(0);
+	vector <pipe> pipes;
 	vector <compressor> compressors;
-
-	compressors.resize(0);
-	int pipeindex=0,pipeid,compressorindex=0,compressorid;
 
 	while (true)
 	{
-		
-		MainMenu(); 
-		menustatus = _getch();
-	
-		while (true) //mainmenu
-		{ 
-		
-			switch (menustatus)
-			{//submenus
-			case '1':
+		MainMenu();
+		switch (_getch())
+		{//submenus
+		case '1':
 
-				pipes.push_back(AddPipe(pipes));
-				join = true;
-				break;
-
-			case '2':
-				compressors.push_back(AddCompressor(compressors));
-				join = true;
-				break;
-
-			case '3':
-
-				OutInfo(pipes, compressors);
-				join = true;
-				break;
-
-			case '4':
-				if (pipes.size() == 0)
-				{
-					cout << "Нету ни одной трубы\n";
-					join = true;
-				}
-				else {
-					do
-					{
-						pipeid = EnterId();
-						pipeindex = SearchPipeIdIndex(pipeid, pipes);
-					} while (SearchPipeIdIndex(pipeid, pipes) == -1);
-					EditPipe(pipes[pipeindex]);
-					join = true;
-					
-				}
-				break;
-
-			case '5':
-				if (compressors.size()==0)
-				{
-					cout << "Нету ни одной компрессорной станции\n";
-					join = true;
-				}
-				else {
-					do
-					{
-						compressorid = EnterId();
-						compressorindex = SearchCompressorIdIndex(compressorid, compressors);
-					} while (SearchCompressorIdIndex(compressorid, compressors) == -1);
-					EditCompressor(compressors[compressorindex]);
-					join = true;
-				}
-				
-				break;
-
-			case '6':
-				SaveInfo(pipes, compressors);
-				join = true;
-				break;
-
-			case '7':
-				LoadInfo(pipes, compressors);
-				join = true;
-				break;
-
-			case '8':
-				break;
-
-			case '0':
-				join = true;
-				quit = true;
-				break;
-			default:
-				join = true;
-				break;
-			}
-			if (join) {
-				if (quit) {
-
-					exit(0);
-				}
+			pipes.push_back(AddPipe(pipes));
 			break;
+
+		case '2':
+			compressors.push_back(AddCompressor(compressors));
+			break;
+
+		case '3':
+
+			OutInfo(pipes, compressors);
+			break;
+
+		case '4':
+			if (pipes.size() == 0)
+			{
+				cout << "Нет ни одной трубы\n";
 			}
-				
+			else {
+				int pipeindex;
+				auto pipeid = 0u;
+				do
+				{
+					cout << "Введите cуществующий id: ";
+					pipeid = EnterUInt();
+					pipeindex = SearchPipeIdIndex(pipeid, pipes);
+				} while (SearchPipeIdIndex(pipeid, pipes) == -1);
+				EditPipe(pipes[pipeindex]);
+			}
+			break;
+
+		case '5':
+			if (compressors.size() == 0)
+			{
+				cout << "Нет ни одной компрессорной станции\n";
+			}
+			else {
+				int compressorindex = 0;
+				unsigned int compressorid = 0;
+				do
+				{
+					cout << "Введите cуществующий id: ";
+					compressorid = EnterUInt();
+					compressorindex = SearchCompressorIdIndex(compressorid, compressors);
+				} while (SearchCompressorIdIndex(compressorid, compressors) == -1);
+				EditCompressor(compressors[compressorindex]);
+			}
+
+			break;
+
+		case '6':
+			SaveInfo(pipes, compressors);
+			break;
+
+		case '7':
+			LoadInfo(pipes, compressors);
+			break;
+
+		case '8':
+			break;
+
+		case '0':
+			return 0;
+
+		default:
+			break;
 		}
+
 	}
 	_getch();
 	return 0;
-	
+
 }
