@@ -8,6 +8,12 @@
 #include <fstream>
 #include <cstdlib>// rand
 
+/*
+//Переделать функции для одной трубы
+-EditPipe , EditCompressor,OutInfo,SaveInfo,Loadinfo,
+Редактирование трубы простое и КС также
+
+*/
 
 
 using namespace std;
@@ -125,17 +131,6 @@ pipe AddPipe(const vector <pipe>& pipes) //переделать
 	} while (!(CheckDouble(value1)));
 	p.length = stod(value1);
 
-	/*while (true) {
-		getline(cin, value1);
-		if (CheckFloat(value1)) {
-			p.length = stod(value1);
-			break;
-		}
-		else
-		{
-			cout << "Введите значение верно !!! Длина:  ";
-		}
-	}*/
 	
 	cout << endl << "Введите диаметр: ";
 	do {
@@ -151,17 +146,6 @@ pipe AddPipe(const vector <pipe>& pipes) //переделать
 	p.diameter = stoi(value1);
 
 
-	/*while (true) {
-		getline(cin, value1);
-		if (CheckInt(value1)) {
-			p.diameter = stoi(value1);
-			break;
-		}
-		else
-		{
-			cout << "Введите значение верно !!! Диаметр:  ";
-		}
-	}*/
 	cout << endl << "Введите 1,если труба в ремонте или "  
 		<< "введите 0,если труба в пригодном для экплуатации: \n" ;
 	
@@ -174,27 +158,7 @@ pipe AddPipe(const vector <pipe>& pipes) //переделать
 	} while (value2 != '0'  && value2 != '1');
 	
 	value2 == '1' ? p.repair = true : p.repair = false;
-	/*while (true)
-	{
-		
-		value2 = _getch();
-		if (value2 != '1' && value2 != '0')
-		{
-			cout << "Введите либо 0(Если труба в пригодном для экплуатации состоянии), либо 1(Если труба в ремонте) \n";
-		}
-		else {
-			if (value2=='1')
-			{
-				p.repair = true;	
-			}
-			else {
-				p.repair = false;
-			}
-			break;
-		
-		}
-		
-	}*/
+
 	return p;
 	
 }
@@ -215,36 +179,13 @@ compressor AddCompressor( const vector <compressor>	&compressors)//передать id
 	do
 	{
 		getline(cin, comp.name);
-		//if (comp.name=="")
-		//{
-		//	cout << "Введите не пустое поле\n";
-		//}
 
 	} while (comp.name=="");
 	
 
 	cout << "Введите общее количество цехов: ";
-	/*while (true) {
-		getline(cin, value1);
-		if (CheckInt(value1)) {
-			compressor[compressor.size() - 1].workshops = stoi(value1);
-			break;
-		}
-		else
-		{
-			cout << "Введите целочисленное число: ";
-		}
-	}*/
 
-	/*do
-	{
-		getline(cin, value);
-		if (!(CheckInt(value)))
-		{
-			cout << "Введите целочисленное число!!!\n ";
-		}
 
-	} while (!(CheckInt(value)));*/
 	comp.workshops = EnterUInt();
 	
 	
@@ -347,6 +288,22 @@ void OutInfo(vector <pipe>& pipes, vector <compressor>& compressors)//переделать
 
 	while (menuexit != '0');
 }
+void OutInfo(const pipe &p){
+	cout << setw(10) << p.id << setw(20) << p.length << setw(20) << p.diameter
+	 << setw(40) << p.repair ? "В ремонте\n" : "В эксплуатации\n";
+}
+void OutInfo(const compressor &comp) {
+	cout << setw(10) << comp.id << setw(20) << comp.name << setw(30) << comp.workshops << setw(30)
+		<< comp.workshopsinwork << setw(20) << comp.performance << endl;
+}
+void HeaderPipe() {
+	cout << setw(10) << "Id " << setw(20) << "Длина" << setw(20) << "Диаметр" << setw(40) << "Состояние(В ремонте или нет)\n";
+}
+void HeaderCompressor() {
+	cout << setw(10) << "Id " << setw(20) << "Название" << setw(30) << "Общее количество цехов"
+		<< setw(30) << "Количество цехов в работе" << setw(20) << "Эффективность" << endl;
+}
+
 
 int SearchPipeIdIndex(int id,const vector <pipe> &pipes) {
 	for (size_t i = 0; i < pipes.size(); i++)
@@ -362,7 +319,7 @@ int SearchPipeIdIndex(int id,const vector <pipe> &pipes) {
 int SearchCompressorIdIndex( int id,const vector <compressor>& compressors) {
 	for (size_t i = 0; i < compressors.size(); i++)
 	{
-		if (compressors[i].id == id)
+		if ( id== compressors[i].id)
 		{
 			return i;
 		}
@@ -372,7 +329,6 @@ int SearchCompressorIdIndex( int id,const vector <compressor>& compressors) {
 
 int EnterUInt() {
 	string value;
-	//cout << "Введите cуществующий id: ";
 	do
 	{
 		getline(cin, value);
@@ -386,7 +342,7 @@ int EnterUInt() {
 
 void EditPipe(pipe &p) {
 	//p.repair = !p.repair;
-
+							
 
 	char char2boolvalue;
 	if (p.repair)
