@@ -7,13 +7,9 @@
 #include <iomanip>//форматированный вывод
 #include <fstream>
 #include <cstdlib>// rand
+#include <windows.h>
 
-/*
-//Переделать функции для одной трубы
--EditPipe , EditCompressor,SaveInfo,Loadinfo,
-Редактирование трубы простое и КС также
 
-*/
 
 
 using namespace std;
@@ -61,6 +57,16 @@ bool CheckDouble(string s) {
 	}
 	return true;
 }
+bool CheckAllSpace(string s) {
+	for (size_t i = 0; i < s.size(); i++)
+	{
+		if (s[i]!=' ')
+		{
+			return false;
+		}
+	}
+	return true;
+}
 //Конец функции проверки
 void Seporator() {
 	for (size_t i = 0; i < 25; i++)
@@ -100,10 +106,10 @@ int RandomId() {
 
 
 
-bool CheckPipeId(int value,const vector <pipe>	&pipesf) {
+bool CheckPipeId(int value,const vector <pipe>	&pipes) {
 	
-	for (size_t i = 0; i < pipesf.size(); i++) {
-		if (value ==pipesf[i].id)
+	for (size_t i = 0; i < pipes.size(); i++) {
+		if (value ==pipes[i].id)
 		{
 			return  true;
 			break;
@@ -112,9 +118,9 @@ bool CheckPipeId(int value,const vector <pipe>	&pipesf) {
 	return false;
 }
 
-bool CheckCompressorId(int value,const vector <compressor> &compressorf) {
-	for (size_t i = 0; i < compressorf.size(); i++) {
-		if (value == compressorf[i].id)
+bool CheckCompressorId(int value,const vector <compressor> &compressors) {
+	for (size_t i = 0; i < compressors.size(); i++) {
+		if (value == compressors[i].id)
 		{
 			return  true;
 			break;
@@ -196,7 +202,7 @@ compressor AddCompressor( const vector <compressor>	&compressors)//передать id
 
 	getline(cin, comp.name);
 
-	} while (comp.name=="");
+	} while (comp.name=="" || CheckAllSpace(comp.name));
 	
 
 	cout << "Введите общее количество цехов: ";
@@ -218,7 +224,7 @@ compressor AddCompressor( const vector <compressor>	&compressors)//передать id
 	do
 	{
 		getline(cin, value);
-		if (!(CheckDouble(value) && stod(value) < 100 && stod(value) > 10))
+		if (!(CheckDouble(value) && stod(value) <= 100 && stod(value) >= 0))
 		{
 			cout << "Введите значение верно !!! Эффективность:  ";
 		}
@@ -320,10 +326,6 @@ int SearchCompressorIndexById( int id,const vector <compressor>& compressors) {
 
 void EditPipe(pipe &p) {
 	p.repair = !p.repair;
-							
-
-		
-	
 }
 
 void EditCompressor( compressor &comp) {
@@ -348,8 +350,6 @@ void SaveInfo(const vector <pipe>  &pipes,const vector <compressor> &compressors
 	fout << "Общая информация\n";
 	fout << "Трубы\n";
 	fout << setw(10) << "Id " << setw(20) << "Длина" << setw(20) << "Диаметр" << setw(40) << "Состояние(В ремонте или нет)\n";
-
-
 	for (size_t i = 0; i < pipes.size(); i++)
 	{
 		fout << setw(10) << pipes[i].id << setw(20) << pipes[i].length << setw(20) << pipes[i].diameter;
@@ -388,46 +388,50 @@ void SaveInfo(const vector <pipe>  &pipes,const vector <compressor> &compressors
 void LoadInfo(vector <pipe>& pipes, vector <compressor>& compressors) {
 	string str;
 	ifstream in("buff.txt");
-	pipe pipebuff ;
+	pipe pipebuff;
 	compressor compressorbuff;
-	do
-	{
-		getline(in, str);
-		if (str == "Труба") {
+	if (in.is_open()) {
+		do
+		{
 			getline(in, str);
-			pipebuff.id = stoi(str) ;
-			
-			getline(in, str);
-			pipebuff.length = stof(str);
-			
-			getline(in, str);
-			pipebuff.diameter = stoi(str);
-			
-			getline(in, str);
-			pipebuff.repair = stoi(str);
-			pipes.push_back(pipebuff);
-		}
-		if (str == "КС") {
-			getline(in, str);
-			compressorbuff.id= stoi(str);
-			getline(in, str);
-			compressorbuff.name = str;
-			getline(in, str);
-			compressorbuff.workshops= stoi(str);
-			getline(in, str);
-			compressorbuff.workshopsinwork = stoi(str);
-			getline(in, str);
-			compressorbuff.performance = stod(str);
-			compressors.push_back(compressorbuff);
+			if (str == "Труба") {
+				getline(in, str);
+				pipebuff.id = stoi(str);
 
-		}
-	} while (str!="");
+				getline(in, str);
+				pipebuff.length = stof(str);
+
+				getline(in, str);
+				pipebuff.diameter = stoi(str);
+
+				getline(in, str);
+				pipebuff.repair = stoi(str);
+				pipes.push_back(pipebuff);
+			}
+			if (str == "КС") {
+				getline(in, str);
+				compressorbuff.id = stoi(str);
+				getline(in, str);
+				compressorbuff.name = str;
+				getline(in, str);
+				compressorbuff.workshops = stoi(str);
+				getline(in, str);
+				compressorbuff.workshopsinwork = stoi(str);
+				getline(in, str);
+				compressorbuff.performance = stod(str);
+				compressors.push_back(compressorbuff);
+
+			}
+		} while (str != "");
+	}
+	
 
 	in.close();
 }
 
 int main() {
-	setlocale(LC_CTYPE, "rus");//установка русского языка 
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
 	vector <pipe> pipes;
 	vector <compressor> compressors;
 
@@ -539,6 +543,8 @@ int main() {
 			break;
 
 		case '7':
+			pipes = {};
+			compressors = {};
 			LoadInfo(pipes, compressors);
 			break;
 
