@@ -430,8 +430,7 @@ void LoadInfo(vector <pipe>& pipes, vector <compressor>& compressors) {
 }
 
 int main() {
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
+	setlocale(LC_CTYPE,"Russian");
 	vector <pipe> pipes;
 	vector <compressor> compressors;
 
