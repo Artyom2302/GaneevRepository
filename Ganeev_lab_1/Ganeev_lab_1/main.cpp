@@ -16,7 +16,9 @@ using namespace std;
 
 //Cоздание структуры Труба
 struct pipe {
-	unsigned int id, diameter;
+	unsigned int id;
+	string name;
+	unsigned int diameter;
 	double length;
 	bool repair;
 };
@@ -32,7 +34,7 @@ struct compressor {
 bool CheckInt(string s) {
 	if (!((s.size() != 0) && (s[0] != '0')))
 		return false;
-	
+
 	for (size_t i = 0; i < s.size(); i++)
 		if (!isdigit(s[i]))
 			return false;
@@ -76,7 +78,13 @@ void Seporator(ostream &out =cout) {
 	out << endl;
 }
 
-
+string EnterName() {
+	string name;
+	do {
+	getline(cin, name);
+	} while (name == "" || CheckAllSpace(name));
+	return name;
+}
 
 double EnterUDouble() {
 	string value;
@@ -109,7 +117,7 @@ int RandomId() {
 
 
 bool CheckPipeId(int value,const vector <pipe>	&pipes) {
-	
+
 	for (size_t i = 0; i < pipes.size(); i++) {
 		if (value ==pipes[i].id)
 		{
@@ -154,8 +162,8 @@ char GetPipeStatus(){
 	} while (x!='1' && x!='0');
 	return x;
 }
-pipe AddPipe(int id) //переделать 
-{ 
+pipe AddPipe(int id)
+{
 	string value1;
 	int key;
 	char value2;
@@ -163,47 +171,40 @@ pipe AddPipe(int id) //переделать
 
 	p.id = id;
 
-	cout<<"Труба\nID №"<<p.id << endl
-
-	  << "Введите длину: " ;
+	cout << "Труба\nID №" << p.id << endl;
+	cout << "Введите название трубы: ";
+	p.name = EnterName();
+    cout<< "Введите длину: " ;
 
 	p.length = EnterUDouble();
 
-	
+
 	cout << endl << "Введите диаметр: ";
-	
+
 	p.diameter = EnterUInt();
 
 
-	cout << endl << "Введите 1,если труба в ремонте или "  
+	cout << endl << "Введите 1,если труба в ремонте или "
 		<< "введите 0,если труба в пригодном для экплуатации: \n" ;
-	
+
 	value2 = GetPipeStatus();
-	
+
 	value2 == '1' ? p.repair = true : p.repair = false;
 
 	return p;
-	
+
 }
 
-compressor AddCompressor(int id)//передать id
+compressor AddCompressor(int id)
 {
 	compressor comp ;
 	string value;
-	
-		
 	comp.id = id;
 
-
 	cout << "Компрессорная станция\nID №" << comp.id
-	 << endl << "Введите имя: ";
+	 << endl << "Введите название: ";
+	comp.name = EnterName();
 
-	do{
-
-	getline(cin, comp.name);
-
-	} while (comp.name=="" || CheckAllSpace(comp.name));
-	
 
 	cout << "Введите общее количество цехов: ";
 	comp.workshops = EnterUInt();
@@ -218,7 +219,7 @@ compressor AddCompressor(int id)//передать id
 
 	} while (!((CheckInt(value) && (stoi(value) <= comp.workshops)) || value == "0"));
 	comp.workshopsinwork = stoi(value);
-	
+
 
 	cout << endl << "Введите эффективность в %: ";
 	do
@@ -235,7 +236,7 @@ compressor AddCompressor(int id)//передать id
 }
 
 void OutInfo(const pipe &p){
-	cout << setw(10) << p.id << setw(20) << p.length << setw(20) << p.diameter
+	cout << setw(10) << p.id << setw(20)<<p.name << setw(20) << p.length << setw(20) << p.diameter
 	 << setw(40) <<((p.repair) ? "В ремонте\n" : "В эксплуатации\n");
 }
 void OutInfo(const compressor &comp) {
@@ -243,7 +244,7 @@ void OutInfo(const compressor &comp) {
 		<< comp.workshopsinwork << setw(20) << comp.performance << endl;
 }
 void HeaderPipe() {
-	cout << setw(10) << "Id " << setw(20) << "Длина" << setw(20) << "Диаметр" << setw(40) << "Состояние(В ремонте или нет)\n";
+	cout << setw(10) << "Id " << setw(20)<<"Название" << setw(20) << "Длина" << setw(20) << "Диаметр" << setw(40) << "Состояние(В ремонте или нет)\n";
 }
 void HeaderCompressor() {
 	cout << setw(10) << "Id " << setw(20) << "Название" << setw(30) << "Общее количество цехов"
@@ -270,24 +271,7 @@ void HeaderCompressor() {
 //	return -1;
 //}
 
-string EnterFileName(char WriteOrLoad) {
-	string filename;
-	if (WriteOrLoad=='w') {
-		cout << "Введите имя файла, в который хотите сохранить :";
-		cin >> filename;
-		filename += ".txt";
-		return filename;
-	}
-	else if(WriteOrLoad == 'l') {
-		cout << "Введите имя файла, в который хотите загрузить :";
-		cin >> filename;
-		filename += ".txtbuff.txt";
-		return filename;
-	}
-	else { return "err"; }
-	
-	
-}
+
 
 void EditPipe(pipe &p) {
 	p.repair = !p.repair;
@@ -307,21 +291,28 @@ void EditCompressor( compressor &comp) {
 	} while (!((CheckInt(value) && (stoi(value) <= comp.workshops)) || value == "0"));
 	comp.workshopsinwork = stoi(value);
 }
+void SaveBuff(const unordered_map <int ,pipe> &pipes, const unordered_map <int, compressor> &compressors,string filename){
+ ofstream fbuff;
+ filename += "buff";
+ fbuff.open(filename);
+ 	for (auto &p:pipes)
+    fbuff <<"Труба\n"<< p.second.id <<endl<<p.second.name<< endl << p.second.length << endl << p.second.diameter << endl << p.second.repair << endl;
+    for (auto &c:compressors)
+    fbuff <<"КС\n" << c.second.id << endl << c.second.name << endl << c.second.workshops << endl
+			<< c.second.workshopsinwork << endl << c.second.performance << endl;
+    fbuff.close();
+}
 
-void SaveInfo(const unordered_map <int ,pipe> &pipes, const unordered_map <int, compressor> &compressors) {
-	ofstream fout,fbuff;
-	string filename= EnterFileName('w');
-	fout.open(filename, 'w');
-	filename += "buff.txt";
-	fbuff.open(filename, 'w');
 
+void SaveInfo(const unordered_map <int ,pipe> &pipes, const unordered_map <int, compressor> &compressors,string filename) {
+	ofstream fout;
+	fout.open(filename);
 	fout << "Общая информация\n";
 	fout << "Трубы\n";
-	fout << setw(10) << "Id " << setw(20) << "Длина" << setw(20) << "Диаметр" << setw(40) << "Состояние(В ремонте или нет)\n";
+	fout << setw(10) << "Id "<<setw(20)<<"Имя" << setw(20) << "Длина" << setw(20) << "Диаметр" << setw(40) << "Состояние(В ремонте или нет)\n";
 	for (auto &p:pipes)
 	{
-		fout << setw(10) << p.second.id << setw(20) << p.second.length << setw(20) << p.second.diameter;
-		fbuff <<"Труба\n"<< p.second.id << endl << p.second.length << endl << p.second.diameter << endl << p.second.repair << endl;
+		fout << setw(10) << p.second.id << setw(20) << p.second.name << setw(20) << p.second.length << setw(20) << p.second.diameter;
 		if (p.second.repair) {
 			fout << setw(40) << "В ремонте\n";
 		}
@@ -335,22 +326,17 @@ void SaveInfo(const unordered_map <int ,pipe> &pipes, const unordered_map <int, 
 	fout << "\nКомпрессорные станции\n";
 	fout << setw(10) << "Id " << setw(20) << "Название" << setw(30) << "Общее количество цехов"
 		<< setw(30) << "Количество цехов в работе" << setw(20) << "Эффективность" << endl;
-
-
 	for (auto &c:compressors)
 	{
 		fout << setw(10) << c.second.id << setw(20) << c.second.name << setw(30) << c.second.workshops << setw(30)
 			<< c.second.workshopsinwork << setw(20) << c.second.performance << endl;
-		fbuff <<"КС\n" << c.second.id << endl << c.second.name << endl << c.second.workshops << endl
-			<< c.second.workshopsinwork << endl << c.second.performance << endl;
-
 	}
 	fout.close();
-	fbuff.close();
+
 }
-void LoadInfo(unordered_map <int, pipe> &pipes, unordered_map <int, compressor> &compressors) {
+void LoadInfo(unordered_map <int, pipe> &pipes, unordered_map <int, compressor> &compressors,string filename) {
 	string str;
-	string filename = EnterFileName('l');
+	filename+="buff";
 	ifstream in(filename);
 	pipe pipebuff;
 	compressor compressorbuff;
@@ -359,8 +345,12 @@ void LoadInfo(unordered_map <int, pipe> &pipes, unordered_map <int, compressor> 
 		{
 			getline(in, str);
 			if (str == "Труба") {
+
 				getline(in, str);
 				pipebuff.id = stoi(str);
+
+				getline(in, str);
+				pipebuff.name = str;
 
 				getline(in, str);
 				pipebuff.length = stof(str);
@@ -391,10 +381,22 @@ void LoadInfo(unordered_map <int, pipe> &pipes, unordered_map <int, compressor> 
 	else {
 		cout << "Такого файла не существует!!!";
 	}
-	
+
 	in.close();
 }
+vector <int> pipesid SearchPipe(unordered_map <int,pipe> pipes,string parametr){
+string name;
+if (parametr=="name")
+{
 
+    name=EnterName();
+    for(auto &p:pipes){
+            if (p.second.name=name){
+
+            };
+    }
+}
+}
 
 
 int main() {
@@ -445,7 +447,7 @@ int main() {
 				cout << "Нет ни одной трубы\n";
 			}
 			Seporator();
-		
+
 			if (compressorsmap.size() != 0) {
 				cout << "Компрессорные станции\n";
 				HeaderCompressor();
@@ -486,7 +488,7 @@ int main() {
 				cout << "Нет ни одной компрессорной станции\n";
 			}
 			else {
-			
+
 				unsigned int compressorid = 0;
 				do
 				{
@@ -498,18 +500,22 @@ int main() {
 
 			break;
 
-		case 6:
-			SaveInfo(pipesmap, compressorsmap);
+		case 6:{
+		    cout<<"Введите имя файла";
+            string filename=EnterName();
+			SaveInfo(pipesmap, compressorsmap,filename);
+			SaveBuff(pipesmap, compressorsmap,filename);
 			break;
-
-		case 7:
+		}
+		case 7:{
+		    cout<<"Введите имя файла";
+		    string filename=EnterName();
 			pipesmap.clear();
 			compressorsmap.clear();
-			LoadInfo(pipesmap, compressorsmap);
-			break;
+			LoadInfo(pipesmap, compressorsmap,filename);
+			break;}
 
 		case 8:
-			
 			break;
 
 		case 0:
@@ -520,7 +526,7 @@ int main() {
 		}
 
 	}
-	
+
 	return 0;
 
 }
